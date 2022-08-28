@@ -103,7 +103,8 @@ class VkBot:
 		self.back_key = utils.get_vk_keyboard([[('Назад', 'красный')]])
 		self.adm_menu_key = utils.get_vk_keyboard([
 			[('Найти товар по фото', 'зеленый')],
-			[('Добавить группу в индекс', 'синий')]
+			[('Добавить группу в индекс', 'синий')],
+			[('удалить группу из индекса', 'красный')]
 		])
 
 	def sender(self, user_id, text, key=utils.get_vk_keyboard([])):
@@ -129,6 +130,13 @@ class VkBot:
 					self.back_key
 				)
 				user.mode = 'get_g_link'
+			elif msg == 'удалить группу из индекса':
+				self.sender(
+					user_id,
+					'Пришлите ссылку на группу, чтобы я удалил её из индекса.',
+					self.back_key
+				)
+				user.mode = 'get_del_g_link'
 
 		elif user.mode == 'get_photo':
 			if msg == 'назад':
@@ -179,39 +187,63 @@ class VkBot:
 					self.sender(user.vk_id, f'Не удалось добавить группу в индекс!\nОшибка: {error}', self.adm_menu_key)
 				user.mode = 'start'
 
-	def user_exe(self, event, user_id, user):
-		flag = False
-		img_data = None
-		if len(event.attachments) > 0:
-			if event.attachments['attach1_type'] == 'photo':
-				msg_info = self.vk_session.method('messages.getById', {'message_ids': event.message_id})
-				attach_info = msg_info['items'][0]['attachments'][0]['photo']['sizes'][-1]
-				img_data = requests.get(attach_info['url']).content
-
-				with open('n_img.jpg', 'wb') as file:
-					file.write(img_data)
-				with open('n_img.jpg', 'rb') as file:
-					img_data = file.read()
-
-				flag = True
-		if flag:
-			self.sender(user.vk_id, 'Поиск начался!', self.clear_key)
-			ans = utils.get_best_five(img_data)
-			if ans:
-				self.sender(user_id, '\n'.join(ans), self.clear_key)
+		elif user.mode == 'get_del_g_link':
+			if msg == 'назад':
+				self.sender(user_id, 'Выберите действие:', self.adm_menu_key)
+				user.mode = 'start'
 			else:
-				self.sender(user_id, 'Не удалось найти подходящих изображений.', self.clear_key)
+				try:
+					screen_name = msg.replace('https://vk.com/', '').strip()
+					g_id = self.vk_session.method('utils.resolveScreenName', {'screen_name': screen_name})['object_id']
+					self.sender(user.vk_id, 'Обработка началась!', self.clear_key)
+					print(
+						Photo().select().where(
+							Photo().post_link.replace('https://vk.com/effect_sd?z=photo-', '').startswith(f'{g_id}_')
+						)
+					)
+					self.sender(user.vk_id, 'Обработка завершилась!', self.adm_menu_key)
+				except Exception as error:
+					self.sender(user.vk_id, f'Не удалось удалить группу из индекса!\nОшибка: {error}', self.adm_menu_key)
+				user.mode = 'start'
+
+	def user_exe(self, event, user_id, user):
+		if len(event.attachments) == 0:
+			self.sender(user_id, 'Пришлите фото, чтобы я нашёл похожие товары.', self.clear_key)
 		else:
-			self.sender(
-				user_id,
-				'Не удалось получить информацию об изображении\nПришлите фото заново.',
-				self.clear_key
-			)
+			flag = False
+			img_data = None
+			if len(event.attachments) > 0:
+				if event.attachments['attach1_type'] == 'photo':
+					msg_info = self.vk_session.method('messages.getById', {'message_ids': event.message_id})
+					attach_info = msg_info['items'][0]['attachments'][0]['photo']['sizes'][-1]
+					img_data = requests.get(attach_info['url']).content
+
+					with open('n_img.jpg', 'wb') as file:
+						file.write(img_data)
+					with open('n_img.jpg', 'rb') as file:
+						img_data = file.read()
+
+					flag = True
+			if flag:
+				self.sender(user.vk_id, 'Поиск начался!', self.clear_key)
+				ans = utils.get_best_five(img_data)
+				if ans:
+					self.sender(user_id, '\n'.join(ans), self.clear_key)
+				else:
+					self.sender(user_id, 'Не удалось найти подходящих изображений.', self.clear_key)
+			else:
+				self.sender(
+					user_id,
+					'Не удалось получить информацию об изображении\nПришлите фото заново.',
+					self.clear_key
+				)
 		user.mode = 'start'
 
 	def run(self):
 		for event in self.longpoll.listen():
 			if (event.type == VkEventType.MESSAGE_NEW) and not event.from_me and not event.from_chat:
+
+				print(event)
 
 				user_id = event.user_id
 				msg = event.text.lower()
