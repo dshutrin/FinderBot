@@ -1,6 +1,5 @@
 from PIL import Image
 from numpy import asarray, array_equal
-import requests
 from models import *
 from json import dumps
 
@@ -29,11 +28,10 @@ def get_per(im1, im2):
 	im2_l = asarray(Image.open('im2.jpg').convert('RGB'))
 
 	if array_equal(im1_l, im2_l):
-		print('ОДИНАКОВЫ!!!')
 		return 100
 
-	im1_l = im1_l.tolist()
-	im2_l = im2_l.tolist()
+	im1_l = list(im1_l.tolist())
+	im2_l = list(im2_l.tolist())
 
 	al = 0
 	eq = 0
@@ -44,10 +42,6 @@ def get_per(im1, im2):
 				al += 1
 				if abs(im1_l[i][k][point] - im2_l[i][k][point]) < 10:
 					eq += 1
-					#print('Совпало')
-				#else:
-					#print(im1_l[i][k], im2_l[i][k], abs(im1_l[i][k][point] - im2_l[i][k][point]))
-	#input()
 	return (eq/al)*100
 
 
@@ -76,12 +70,27 @@ def get_best_five(img):
 def get_user_by_id(user_id):
 	try:
 		return User().get(vk_id=user_id)
-	except:
+	except Exception as error:
+		print(f'{error}Пользователь не найден в базе данных!\nДобавляю.')
 		User(
 			vk_id=user_id,
 			mode='start'
 		).save()
 		return User().get(vk_id=user_id)
+
+
+def get_group_members(vk_session, g_id):
+	users_info = vk_session.method('groups.getMembers', {'group_id': g_id})
+	count = users_info["count"]
+	members = users_info["users"]
+	offset = 1000
+
+	while offset < count:
+		users_info = vk_session.method('groups.getMembers', {"group_id": 188446752, "count": count, "offset": offset})
+		offset = users_info["offset"]
+		members += users_info["members"]
+
+	return members
 
 
 if __name__ == '__main__':
