@@ -195,6 +195,7 @@ class VkBot:
 				try:
 					screen_name = msg.replace('https://vk.com/', '').strip()
 					g_id = self.vk_session.method('utils.resolveScreenName', {'screen_name': screen_name})['object_id']
+					input(g_id)
 					self.sender(user.vk_id, 'Обработка началась!', self.clear_key)
 					phs = Photo().select()
 					for photo in phs:
