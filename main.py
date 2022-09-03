@@ -196,7 +196,6 @@ class VkBot:
 					screen_name = msg.replace('https://vk.com/', '').strip()
 					g_id = self.vk_session.method('utils.resolveScreenName', {'screen_name': screen_name})['object_id']
 					self.sender(user.vk_id, 'Обработка началась!', self.clear_key)
-					ln = 33 + len(str(g_id)) + 1
 					print(
 						Photo().select().where(
 							f'https://vk.com/effect_sd?z=photo-{g_id}_' in Photo().post_link
