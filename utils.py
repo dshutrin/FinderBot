@@ -81,9 +81,8 @@ def get_user_by_id(user_id):
 
 def get_group_members(vk_session, g_id):
 	users_info = vk_session.method('groups.getMembers', {'group_id': g_id})
-	print(users_info)
 	count = users_info["count"]
-	members = users_info["users"]
+	members = users_info["items"]
 	offset = 1000
 
 	while offset < count:
