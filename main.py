@@ -171,7 +171,6 @@ class VkBot:
 						self.adm_menu_key
 					)
 				user.mode = 'start'
-			user.save()
 
 		elif user.mode == 'get_g_link':
 			if msg == 'назад':
@@ -206,6 +205,8 @@ class VkBot:
 				except Exception as error:
 					self.sender(user.vk_id, f'Не удалось удалить группу из индекса!\nОшибка: {error}', self.adm_menu_key)
 				user.mode = 'start'
+
+		user.save()
 
 	def user_exe(self, event, user_id, user):
 		if len(event.attachments) == 0:
