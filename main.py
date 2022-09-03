@@ -192,19 +192,19 @@ class VkBot:
 				self.sender(user_id, 'Выберите действие:', self.adm_menu_key)
 				user.mode = 'start'
 			else:
-				#try:
-				screen_name = msg.replace('https://vk.com/', '').strip()
-				g_id = self.vk_session.method('utils.resolveScreenName', {'screen_name': screen_name})['object_id']
-				self.sender(user.vk_id, 'Обработка началась!', self.clear_key)
-				ln = 33 + len(str(g_id)) + 1
-				print(
-					Photo().select().where(
-						Photo().post_link[0:ln] == f'https://vk.com/effect_sd?z=photo-{g_id}_'
+				try:
+					screen_name = msg.replace('https://vk.com/', '').strip()
+					g_id = self.vk_session.method('utils.resolveScreenName', {'screen_name': screen_name})['object_id']
+					self.sender(user.vk_id, 'Обработка началась!', self.clear_key)
+					ln = 33 + len(str(g_id)) + 1
+					print(
+						Photo().select().where(
+							Photo().post_link[0:ln] == f'https://vk.com/effect_sd?z=photo-{g_id}_'
+						)
 					)
-				)
-				self.sender(user.vk_id, 'Обработка завершилась!', self.adm_menu_key)
-				#except Exception as error:
-				#	self.sender(user.vk_id, f'Не удалось удалить группу из индекса!\nОшибка: {error}', self.adm_menu_key)
+					self.sender(user.vk_id, 'Обработка завершилась!', self.adm_menu_key)
+				except Exception as error:
+					self.sender(user.vk_id, f'Не удалось удалить группу из индекса!\nОшибка: {error}', self.adm_menu_key)
 				user.mode = 'start'
 
 		user.save()
