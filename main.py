@@ -197,12 +197,13 @@ class VkBot:
 					g_id = self.vk_session.method('utils.resolveScreenName', {'screen_name': screen_name})['object_id']
 					self.sender(user.vk_id, 'Обработка началась!', self.clear_key)
 					phs = Photo().select()
-					input([x for x in Photo().select().where(f'https://vk.com/{screen_name}?z=photo-{g_id}_' in Photo().post_link)])
+					count = 0
 					for photo in phs:
 						if f'https://vk.com/{screen_name}?z=photo-{g_id}_' in photo.post_link:
 							print(f'DELETE -> {photo.post_link}')
 							photo.delete_instance()
-					self.sender(user.vk_id, 'Обработка завершилась!', self.adm_menu_key)
+							count += 1
+					self.sender(user.vk_id, f'Обработка завершилась!\nУдалено фотографий: {count}', self.adm_menu_key)
 				except Exception as error:
 					self.sender(user.vk_id, f'Не удалось удалить группу из индекса!\nОшибка: {error}', self.adm_menu_key)
 				user.mode = 'start'
