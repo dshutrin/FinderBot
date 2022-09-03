@@ -66,7 +66,7 @@ class BotBase:
 		added = 0
 
 		for post_info in self.get_wall_photo_posts(gid):  # -174312128
-			print('Перехожу к следующей фотографии...')
+			print(f'Перехожу к следующей фотографии #{alls}')
 			alls += 1
 			pid = f"{post_info['owner_id']}_{post_info['id']}"
 			link = f"https://vk.com/{g_name}?z=photo{pid}%2Falbum{post_info['owner_id']}_00%2Frev"  # ссылка на пост
