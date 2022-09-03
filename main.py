@@ -199,6 +199,7 @@ class VkBot:
 					phs = Photo().select()
 					for photo in phs:
 						if f'https://vk.com/effect_sd?z=photo-{g_id}_' in photo.post_link:
+							print(f'DELETE -> {photo.post_link}')
 							photo.delete_instance()
 					self.sender(user.vk_id, 'Обработка завершилась!', self.adm_menu_key)
 				except Exception as error:
