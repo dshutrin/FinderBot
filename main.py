@@ -199,7 +199,7 @@ class VkBot:
 					ln = 33 + len(str(g_id)) + 1
 					print(
 						Photo().select().where(
-							Photo().post_link[0:ln] == f'https://vk.com/effect_sd?z=photo-{g_id}_'
+							f'https://vk.com/effect_sd?z=photo-{g_id}_' in Photo().post_link
 						)
 					)
 					self.sender(user.vk_id, 'Обработка завершилась!', self.adm_menu_key)
