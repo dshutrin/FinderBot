@@ -171,6 +171,7 @@ class VkBot:
 						self.adm_menu_key
 					)
 				user.mode = 'start'
+			user.save()
 
 		elif user.mode == 'get_g_link':
 			if msg == 'назад':
