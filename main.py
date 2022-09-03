@@ -243,11 +243,11 @@ class VkBot:
 		for event in self.longpoll.listen():
 			if (event.type == VkEventType.MESSAGE_NEW) and not event.from_me and not event.from_chat:
 
-				print(event)
-
 				user_id = event.user_id
 				msg = event.text.lower()
 				user = utils.get_user_by_id(user_id)
+
+				print(user.mode)
 
 				members = utils.get_group_members(self.vk_session, 188446752)
 
