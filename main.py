@@ -54,6 +54,8 @@ class BotBase:
 						if att['type'] == 'photo':
 							yield att['photo']
 
+		return None
+
 	def init_group_data(self, gid):
 
 		g_name = self.vk_session.method('groups.getById', {'group_id': -gid})[0]['screen_name']
@@ -66,30 +68,31 @@ class BotBase:
 		added = 0
 
 		for post_info in self.get_wall_photo_posts(gid):  # -174312128
-			print(f'Перехожу к следующей фотографии #{alls}')
-			alls += 1
-			pid = f"{post_info['owner_id']}_{post_info['id']}"
-			link = f"https://vk.com/{g_name}?z=photo{pid}%2Falbum{post_info['owner_id']}_00%2Frev"  # ссылка на пост
-			url = post_info['sizes'][-1]['url']  # ссылка на фото
+			if post_info != None:
+				print(f'Перехожу к следующей фотографии #{alls}')
+				alls += 1
+				pid = f"{post_info['owner_id']}_{post_info['id']}"
+				link = f"https://vk.com/{g_name}?z=photo{pid}%2Falbum{post_info['owner_id']}_00%2Frev"  # ссылка на пост
+				url = post_info['sizes'][-1]['url']  # ссылка на фото
 
-			try:
-				photo = requests.get(url).content
 				try:
-					Photo().get(photo=photo)
-				except Exception as error:
-					print(f'Фото не найдено в базе!\nДобавляю.')
-					Photo(
-						photo=photo,
-						post_link=link,
-						photo_link=post_info['id']
-					).save()
-					added += 1
-					print(f'ADDED: {added}')
-				else:
+					photo = requests.get(url).content
+					try:
+						Photo().get(photo=photo)
+					except Exception as error:
+						print(f'Фото не найдено в базе!\nДобавляю.')
+						Photo(
+							photo=photo,
+							post_link=link,
+							photo_link=post_info['id']
+						).save()
+						added += 1
+						print(f'ADDED: {added}')
+					else:
+						errors += 1
+				except Exception as err:
+					print(f'error adding photo: {err}')
 					errors += 1
-			except Exception as err:
-				print(f'error adding photo: {err}')
-				errors += 1
 
 		return f'Всего найдено записей: {alls}\nДобавлено фото: {added}\nОшибок: {errors}'
 
