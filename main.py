@@ -78,7 +78,7 @@ class BotBase:
 				try:
 					Photo().get(photo=photo)
 				except Exception as error:
-					print(f'Фото не найдено в базе!\n{error}\nДобавляю.')
+					print(f'Фото не найдено в базе!\nДобавляю.')
 					Photo(
 						photo=photo,
 						post_link=link,
