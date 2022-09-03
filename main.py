@@ -198,7 +198,7 @@ class VkBot:
 					self.sender(user.vk_id, 'Обработка началась!', self.clear_key)
 					print(
 						Photo().select().where(
-							Photo().post_link.replace('https://vk.com/effect_sd?z=photo-', '').startswith(f'{g_id}_')
+							Photo().post_link.startswith(f'https://vk.com/effect_sd?z=photo-{g_id}_')
 						)
 					)
 					self.sender(user.vk_id, 'Обработка завершилась!', self.adm_menu_key)
