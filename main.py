@@ -35,7 +35,7 @@ class BotBase:
 						atts = post['attachments']
 						for att in atts:
 							if att['type'] == 'photo':
-								print(att)
+								#print(att)
 								yield att['photo']
 			posts = self.vk_session.method('wall.get', {'owner_id': wall_id, 'count': steps[0], 'offset': steps[1]})['items']
 			for post in posts:
@@ -43,7 +43,7 @@ class BotBase:
 					atts = post['attachments']
 					for att in atts:
 						if att['type'] == 'photo':
-							print(att)
+							#print(att)
 							yield att['photo']
 		else:
 			posts = self.vk_session.method('wall.get', {'owner_id': wall_id, 'count': count})['items']
@@ -53,7 +53,7 @@ class BotBase:
 					atts = post['attachments']
 					for att in atts:
 						if att['type'] == 'photo':
-							print(att)
+							#print(att)
 							yield att['photo']
 
 	def init_group_data(self, gid):
@@ -85,6 +85,7 @@ class BotBase:
 						photo_link=post_info['id']
 					).save()
 					added += 1
+					print(f'ADDED: {added}')
 				else:
 					errors += 1
 			except Exception as err:
@@ -200,7 +201,7 @@ class VkBot:
 					count = 0
 					for photo in phs:
 						if f'https://vk.com/{screen_name}?z=photo-{g_id}_' in photo.post_link:
-							print(f'DELETE -> {photo.post_link}')
+							print(f'LOG <DELETE> -> {photo.post_link}')
 							photo.delete_instance()
 							count += 1
 					self.sender(user.vk_id, f'Обработка завершилась!\nУдалено фотографий: {count}', self.adm_menu_key)
@@ -250,8 +251,6 @@ class VkBot:
 				user_id = event.user_id
 				msg = event.text.lower()
 				user = utils.get_user_by_id(user_id)
-
-				print(user.mode)
 
 				members = utils.get_group_members(self.vk_session, 188446752)
 

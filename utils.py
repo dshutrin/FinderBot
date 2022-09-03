@@ -35,7 +35,7 @@ def get_per(im1, im2):
 
 	al = 0
 	eq = 0
-	print(len(im1_l), len(im1_l[0]), "  ", len(im2_l), len(im2_l[0]))
+	#print(len(im1_l), len(im1_l[0]), "  ", len(im2_l), len(im2_l[0]))
 	for i in range(min(len(im2_l), len(im1_l))):
 		for k in range(min(len(im2_l[i]), len(im1_l[i]))):
 			for point in range(min(len(im2_l[i][k]), len(im1_l[i][k]))):
@@ -50,7 +50,7 @@ def get_best_five(img):
 	items = [None, None, None, None, None]
 	for photo in [x for x in Photo().select()]:
 		coef = get_per(photo.photo, img)
-		print(coef)
+		#print(coef)
 		if coef > 50:
 			for i in reversed(range(len(top))):
 				if top[i] < coef:
