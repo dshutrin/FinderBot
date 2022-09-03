@@ -25,6 +25,7 @@ class BotBase:
 	def get_wall_photo_posts(self, wall_id):
 		qu = self.vk_session.method('wall.get', {'owner_id': wall_id})
 		count = qu['count']
+		print(f'Всего постов найдено: {count}')
 
 		if count > 100:
 			steps = [count//100, count-count//100]
@@ -35,7 +36,6 @@ class BotBase:
 						atts = post['attachments']
 						for att in atts:
 							if att['type'] == 'photo':
-								#print(att)
 								yield att['photo']
 			posts = self.vk_session.method('wall.get', {'owner_id': wall_id, 'count': steps[0], 'offset': steps[1]})['items']
 			for post in posts:
@@ -43,7 +43,6 @@ class BotBase:
 					atts = post['attachments']
 					for att in atts:
 						if att['type'] == 'photo':
-							#print(att)
 							yield att['photo']
 		else:
 			posts = self.vk_session.method('wall.get', {'owner_id': wall_id, 'count': count})['items']
@@ -53,7 +52,6 @@ class BotBase:
 					atts = post['attachments']
 					for att in atts:
 						if att['type'] == 'photo':
-							#print(att)
 							yield att['photo']
 
 	def init_group_data(self, gid):
@@ -68,6 +66,7 @@ class BotBase:
 		added = 0
 
 		for post_info in self.get_wall_photo_posts(gid):  # -174312128
+			print('Перехожу к следующей фотографии...')
 			alls += 1
 			pid = f"{post_info['owner_id']}_{post_info['id']}"
 			link = f"https://vk.com/{g_name}?z=photo{pid}%2Falbum{post_info['owner_id']}_00%2Frev"  # ссылка на пост
