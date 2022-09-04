@@ -69,7 +69,7 @@ class BotBase:
 
 		for post_info in self.get_wall_photo_posts(gid):  # -174312128
 			if post_info != None:
-				print(f'Перехожу к следующей фотографии #{alls}')
+				print(f'Перехожу к следующей фотографии #{alls+1}')
 				alls += 1
 				pid = f"{post_info['owner_id']}_{post_info['id']}"
 				link = f"https://vk.com/{g_name}?z=photo{pid}%2Falbum{post_info['owner_id']}_00%2Frev"  # ссылка на пост
@@ -79,6 +79,7 @@ class BotBase:
 					photo = requests.get(url).content
 					try:
 						Photo().get(photo=photo)
+						print('Такое фото уже есть!')
 					except Exception as error:
 						print(f'Фото не найдено в базе!\nДобавляю.')
 						Photo(
@@ -90,6 +91,7 @@ class BotBase:
 						print(f'ADDED: {added}')
 					else:
 						errors += 1
+						print(f'Errors: {errors}')
 				except Exception as err:
 					print(f'error adding photo: {err}')
 					errors += 1

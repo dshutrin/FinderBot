@@ -2,6 +2,7 @@ from PIL import Image
 from numpy import asarray, array_equal
 from models import *
 from json import dumps
+from threading import Thread
 
 
 def get_vk_keyboard(buts):  # функция создания клавиатур
@@ -45,13 +46,12 @@ def get_per(im1, im2):
 	return (eq/al)*100
 
 
-def get_best_five(img):
+def get_best_five_tr(img):
 	top = [0, 0, 0, 0, 0]
 	items = [None, None, None, None, None]
 	for photo in [x for x in Photo().select()]:
 		coef = get_per(photo.photo, img)
-		#print(coef)
-		if coef > 50:
+		if coef > 70:
 			for i in reversed(range(len(top))):
 				if top[i] < coef:
 					for m in range(1, len(top)-1):
@@ -65,6 +65,55 @@ def get_best_five(img):
 							items[i+1:len(items)] = [None]*len(items[i+1:len(items)])
 							top[i+1:len(items)] = [0] * len(items[i+1:len(items)])
 	return list(set([x for x in items if x]))
+
+
+def get_best_five(img):
+
+	inputs = [x for x in Photo().select()]
+	top1 = [0, 0, 0, 0, 0]
+	items1 = [None, None, None, None, None]
+
+	top2 = [0, 0, 0, 0, 0]
+	items2 = [None, None, None, None, None]
+
+	def t_p(params, top, items):
+		for photo in params:
+			coef = get_per(photo.photo, img)
+			if coef > 70:
+				for i in reversed(range(len(top))):
+					if top[i] < coef:
+						for m in range(1, len(top)-1):
+							for k in reversed(range(i, len(top)-m)):
+								if k != 4:
+									top[k+1] = top[k]
+									items[k+1] = items[k]
+							top[i] = coef
+							items[i] = photo.post_link
+							if items[i] in items[i+1:len(items)]:
+								items[i+1:len(items)] = [None]*len(items[i+1:len(items)])
+								top[i+1:len(items)] = [0] * len(items[i+1:len(items)])
+
+	ln = len(inputs)
+	t1 = Thread(target=t_p, args=(inputs[0:int(ln//2)], top1, items1, ))
+	t2 = Thread(target=t_p, args=(inputs[int(int(ln//2)*2):], top2, items2, ))
+
+	t1.start()
+	t2.start()
+
+	t1.join()
+	t2.join()
+
+	top = top1 + top2
+	items = items1 + items2
+
+	for i in range(len(top)):
+		for k in range(i+1, len(top)):
+
+			if top[i] < top[k]:
+				top[i], top[k] = top[k], top[i]
+				items[i], items[k] = items[k], items[i]
+
+	return list(set([x for x in items[0:5] if x]))
 
 
 def get_user_by_id(user_id):
