@@ -94,8 +94,8 @@ def get_best_five(img):
 								top[i+1:len(items)] = [0] * len(items[i+1:len(items)])
 
 	ln = len(inputs)
-	t1 = Thread(target=t_p, args=(inputs[0:int(ln//2)], top1, items1, ))
-	t2 = Thread(target=t_p, args=(inputs[int(int(ln//2)*2):], top2, items2, ))
+	t1 = Thread(target=t_p, args=(inputs[0:int(ln//2)], *top1, *items1, ))
+	t2 = Thread(target=t_p, args=(inputs[int(int(ln//2)*2):], *top2, *items2, ))
 
 	t1.start()
 	t2.start()
